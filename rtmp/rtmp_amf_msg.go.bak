@@ -1,0 +1,425 @@
+package rtmp
+
+import (
+	"bytes"
+	"github.com/hongruiqi/amf.go/amf0"
+	"github.com/hongruiqi/amf.go/amf3"
+)
+
+var (
+	/* basic types */
+	RTMP_AMF_NUMBER      = 0x00
+	RTMP_AMF_BOOLEAN     = 0x01
+	RTMP_AMF_STRING      = 0x02
+	RTMP_AMF_OBJECT      = 0x03
+	RTMP_AMF_NULL        = 0x05
+	RTMP_AMF_ARRAY_NULL  = 0x06
+	RTMP_AMF_MIXED_ARRAY = 0x08
+	RTMP_AMF_END         = 0x09
+	RTMP_AMF_ARRAY       = 0x0a
+
+	/* extended types */
+	RTMP_AMF_INT8     = 0x0100
+	RTMP_AMF_INT16    = 0x0101
+	RTMP_AMF_INT32    = 0x0102
+	RTMP_AMF_VARIANT_ = 0x0103
+
+	/* r/w flags */
+	RTMP_AMF_OPTIONAL = 0x1000
+	RTMP_AMF_TYPELESS = 0x2000
+	RTMP_AMF_CONTEXT  = 0x4000
+
+	RTMP_AMF_VARIANT = RTMP_AMF_VARIANT_ | RTMP_AMF_TYPELESS
+)
+
+//NetConnection.Call.Failed
+//NetConnection.Call.BadVersion
+//NetConnection.Connect.AppShutdown
+//NetConnection.Connect.Closed
+//NetConnection.Connect.Rejected
+//NetConnection.Connect.Success
+//NetStream.Clear.Success
+//NetStream.Clear.Failed
+//NetStream.Publish.Start
+//NetStream.Publish.BadName
+//NetStream.Failed
+//NetStream.Unpublish.Success
+//NetStream.Record.Start
+//NetStream.Record.NoAccess
+//NetStream.Record.Stop
+//NetStream.Record.Failed
+//NetStream.Play.InsufficientBW
+//NetStream.Play.Start
+//NetStream.Play.StreamNotFound
+//NetStream.Play.Stop
+//NetStream.Play.Failed
+//NetStream.Play.Reset
+//NetStream.Play.PublishNotify
+//NetStream.Play.UnpublishNotify
+//NetStream.Data.Start
+//Application.Script.Error
+//Application.Script.Warning
+//Application.Resource.LowMemory
+//Application.Shutdown
+//Application.GC
+//Play
+//Pause
+//demoService.getListOfAvailableFLVs
+//getStreamLength
+//connect
+//app
+//flashVer
+//swfUrl
+//tcUrl
+//fpad
+//capabilities
+//audioCodecs
+//audioCodecs
+//videoCodecs
+//videoFunction
+//pageUrl
+//createStream
+//deleteStream
+//duration
+//framerate
+//audiocodecid
+//audiodatarate
+//videocodecid
+//videodatarate
+//height
+//width\\package rtmp
+
+var (
+	AMF_NUMBER      = 0x00
+	AMF_BOOLEAN     = 0x01
+	AMF_STRING      = 0x02
+	AMF_OBJECT      = 0x03
+	AMF_NULL        = 0x05
+	AMF_ARRAY_NULL  = 0x06
+	AMF_MIXED_ARRAY = 0x08
+	AMF_END         = 0x09
+	AMF_ARRAY       = 0x0a
+
+	AMF_INT8     = 0x0100
+	AMF_INT16    = 0x0101
+	AMF_INT32    = 0x0102
+	AMF_VARIANT_ = 0x0103
+)
+
+func newAMF3Decoder(b []byte) (enc *amf3.Decoder, buf *bytes.Buffer) {
+	buf = bytes.NewBuffer(b)
+	enc = amf3.NewDecoder(buf)
+	return
+}
+func newAMF3Encoder() (enc *amf3.Encoder, buf *bytes.Buffer) {
+	buf = new(bytes.Buffer)
+	enc = amf3.NewEncoder(buf)
+	return
+}
+
+func newAMF0Decoder(b []byte) (enc *amf0.Decoder, buf *bytes.Buffer) {
+	buf = bytes.NewBuffer(b)
+	enc = amf0.NewDecoder(buf)
+	return
+}
+func newAMF0Encoder() (enc *amf0.Encoder, buf *bytes.Buffer) {
+	buf = new(bytes.Buffer)
+	enc = amf0.NewEncoder(buf)
+	return
+}
+
+func newString(str string) amf0.StringType {
+	return amf0.StringType(str)
+}
+
+func newNumber(v uint64) amf0.NumberType {
+	return amf0.NumberType(v)
+}
+
+func newBool(v bool) amf0.BooleanType {
+	return amf0.BooleanType(v)
+}
+
+func newObject() amf0.ObjectType {
+	return make(amf0.ObjectType)
+}
+
+func newString3(str string) amf3.StringType {
+	return amf3.StringType(str)
+}
+
+func newNumber3(v uint64) amf3.DoubleType {
+	return amf3.DoubleType(v)
+}
+
+func newTrue3() *amf3.TrueType {
+	return new(amf3.TrueType)
+}
+
+func newFalse3() *amf3.FalseType {
+	return new(amf3.FalseType)
+}
+
+func newObject3() *amf3.ObjectType {
+	obj := new(amf3.ObjectType)
+	dy := make(map[amf3.StringType]interface{})
+	obj.Dynamic = dy
+	return obj
+}
+
+func readString3(dec *amf3.Decoder) string {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(amf3.StringType); ok {
+		return string(value)
+	}
+	return ""
+}
+func writeString3(enc *amf3.Encoder, value string) error {
+	err := enc.Encode(amf3.StringType(value))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func writeNumber3(enc *amf3.Encoder, value uint64) error {
+	err := enc.Encode(amf3.DoubleType(value))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func readNumber3(dec *amf3.Decoder) uint64 {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(amf3.DoubleType); ok {
+		return uint64(value)
+	}
+	return 0
+}
+
+func writeBool3(enc *amf3.Encoder, value bool) error {
+	if value {
+		err := enc.Encode(amf3.TrueType{})
+		if err != nil {
+			return err
+		}
+	} else {
+		err := enc.Encode(amf3.FalseType{})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func readBool3(dec *amf3.Decoder) bool {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if _, ok := v.(*amf3.TrueType); ok {
+		return true
+	}
+	if _, ok := v.(*amf3.FalseType); ok {
+		return false
+	}
+	return false
+}
+func writeNull3(enc *amf3.Encoder) error {
+	err := enc.Encode(amf3.NullType{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func readNull3(dec *amf3.Decoder) (value interface{}) {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(amf3.NullType); ok {
+		return value
+	}
+	return
+}
+
+func writeObject3(enc *amf3.Encoder, obj interface{}) error {
+	err := enc.Encode(obj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func readObject3(dec *amf3.Decoder) (value *amf3.ObjectType) {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(*amf3.ObjectType); ok {
+		return value
+	}
+	return
+}
+
+func putString3(obj *amf3.ObjectType, k, v string) {
+	obj.Dynamic[amf3.StringType(k)] = amf3.StringType(v)
+}
+
+func putNumber3(obj *amf3.ObjectType, k string, v uint64) {
+	obj.Dynamic[amf3.StringType(k)] = amf3.DoubleType(v)
+}
+
+func putBool3(obj *amf3.ObjectType, k string, v bool) {
+	if v {
+		obj.Dynamic[amf3.StringType(k)] = newTrue3()
+	} else {
+		obj.Dynamic[amf3.StringType(k)] = newFalse3()
+	}
+
+}
+
+func putObject3(obj *amf3.ObjectType, k string, v *amf3.ObjectType) {
+	obj.Dynamic[amf3.StringType(k)] = v
+}
+
+func putString(obj amf0.ObjectType, k, v string) {
+	obj[amf0.StringType(k)] = amf0.StringType(v)
+}
+
+func putNumber(obj amf0.ObjectType, k string, v uint64) {
+	obj[amf0.StringType(k)] = amf0.NumberType(v)
+}
+
+func putBool(obj amf0.ObjectType, k string, v bool) {
+	obj[amf0.StringType(k)] = amf0.BooleanType(v)
+}
+
+func putObject(obj amf0.ObjectType, k string, v amf0.ObjectType) {
+	obj[amf0.StringType(k)] = v
+}
+
+func getString(obj interface{}, k string) string {
+	o, _ := obj.(*amf0.ObjectType)
+	oo := *o
+	v, _ := oo[amf0.StringType(k)].(amf0.StringType)
+	return string(v)
+}
+
+func getNumber(obj interface{}, k string) uint64 {
+	o, _ := obj.(*amf0.ObjectType)
+	oo := *o
+	v, _ := oo[amf0.StringType(k)].(amf0.NumberType)
+	return uint64(v)
+}
+
+func getBool(obj interface{}, k string) bool {
+	o, _ := obj.(*amf0.ObjectType)
+	oo := *o
+	v, _ := oo[amf0.StringType(k)].(amf0.BooleanType)
+	return bool(v)
+}
+
+func getObject(obj interface{}, k string) *amf0.ObjectType {
+	o, _ := obj.(*amf0.ObjectType)
+	oo := *o
+	v, _ := oo[amf0.StringType(k)].(*amf0.ObjectType)
+	return v
+}
+
+func writeString(enc *amf0.Encoder, value string) error {
+	err := enc.Encode(amf0.StringType(value))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readString(dec *amf0.Decoder) string {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(amf0.StringType); ok {
+		return string(value)
+	}
+	return ""
+}
+
+func writeNumber(enc *amf0.Encoder, value uint64) error {
+	err := enc.Encode(amf0.NumberType(value))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readNumber(dec *amf0.Decoder) uint64 {
+	v, err := dec.Decode()
+	if err != nil {
+		return 0
+	}
+	if value, ok := v.(amf0.NumberType); ok {
+		return uint64(value)
+	}
+	return 0
+}
+
+func writeBool(enc *amf0.Encoder, value bool) error {
+	err := enc.Encode(amf0.BooleanType(value))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readBool(dec *amf0.Decoder) bool {
+	v, err := dec.Decode()
+	if err != nil {
+		return false
+	}
+	if value, ok := v.(amf0.BooleanType); ok {
+		return bool(value)
+	}
+	return false
+}
+func writeNull(enc *amf0.Encoder) error {
+	err := enc.Encode(amf0.NullType{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func readNull(dec *amf0.Decoder) (value interface{}) {
+	v, err := dec.Decode()
+	if err != nil {
+		panic(err)
+	}
+	if value, ok := v.(amf0.NullType); ok {
+		return value
+	}
+	return
+}
+
+func writeObject(enc *amf0.Encoder, obj interface{}) error {
+	err := enc.Encode(obj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func readObject(dec *amf0.Decoder) (value *amf0.ObjectType) {
+	v, err := dec.Decode()
+	if err != nil {
+		return
+	}
+	if value, ok := v.(*amf0.ObjectType); ok {
+		return value
+	}
+	return
+}
